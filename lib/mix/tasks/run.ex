@@ -12,7 +12,6 @@ defmodule Mix.Tasks.Tablecopy.Run do
 
   * `--skip-init` - Skip initialization of the source table
   * `--skip-copy` - Skip copy of content from the source to the destination table
-  * `--no-server` - Do not start the embedded web server
   """
   use Mix.Task
 
@@ -24,7 +23,7 @@ defmodule Mix.Tasks.Tablecopy.Run do
 
     {options, _, invalid} =
       OptionParser.parse(args,
-        strict: [skip_init: :boolean, skip_copy: :boolean, no_server: :boolean]
+        strict: [skip_init: :boolean, skip_copy: :boolean]
       )
 
     if Enum.any?(invalid) do
@@ -33,6 +32,8 @@ defmodule Mix.Tasks.Tablecopy.Run do
 
     config = get_config()
 
+    start_time = Time.utc_now()
+
     unless options[:skip_init] do
       fill_source_table(config)
     end
@@ -40,6 +41,10 @@ defmodule Mix.Tasks.Tablecopy.Run do
     unless options[:skip_copy] do
       copy_source_to_destination_table(config)
     end
+
+    msec = Time.diff(Time.utc_now(), start_time, :millisecond)
+
+    IO.puts("Total time taken: #{msec} milliseconds")
   end
 
   defp get_config() do
@@ -91,23 +96,29 @@ defmodule Mix.Tasks.Tablecopy.Run do
 
   defp copy_source_to_destination_table(%{
          source_table: source_table,
-         dest_table: dest_table
+         dest_table: dest_table,
+         buffer: buffer
        }) do
     IO.puts("Copying data from table #{source_table} to table #{dest_table}")
-    tmp_path = Temp.path!()
 
-    Postgrex.transaction(SourceDB, fn conn ->
-      reading_query =
-        Postgrex.prepare!(
-          conn,
-          "",
-          "COPY #{source_table} TO STDOUT"
-        )
+    parent_pid = self()
 
-      reading_stream = Postgrex.stream(conn, reading_query, [])
+    Task.start_link(fn ->
+      Postgrex.transaction(SourceDB, fn conn ->
+        reading_query =
+          Postgrex.prepare!(
+            conn,
+            "",
+            "COPY #{source_table} TO STDOUT"
+          )
 
-      Enum.into(reading_stream, File.stream!(tmp_path, [:write]), fn %Postgrex.Result{rows: rows} ->
-        rows
+        reading_stream = Postgrex.stream(conn, reading_query, [], max_rows: buffer)
+
+        Enum.each(reading_stream, fn %Postgrex.Result{rows: rows} ->
+          send(parent_pid, {:rows, rows})
+        end)
+
+        send(parent_pid, :done)
       end)
     end)
 
@@ -121,10 +132,25 @@ defmodule Mix.Tasks.Tablecopy.Run do
 
       writing_stream = Postgrex.stream(conn, writing_query, [])
 
-      Enum.into(File.stream!(tmp_path, [:read]), writing_stream)
+      Enum.into(
+        Stream.unfold(0, fn cnt ->
+          receive do
+            {:rows, rows} ->
+              cnt = cnt + length(rows)
+              IO.write("Copied #{cnt} rows...\r")
+              {Enum.join(rows), cnt}
+
+            :done ->
+              nil
+
+            _ ->
+              raise "Unknown message received"
+          end
+        end),
+        writing_stream
+      )
     end)
 
-    IO.puts("done!")
-    File.rm!(tmp_path)
+    IO.puts("\ndone!")
   end
 end

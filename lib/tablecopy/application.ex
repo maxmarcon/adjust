@@ -1,4 +1,4 @@
-defmodule Tablecopy do
+defmodule Tablecopy.Application do
   use Application
 
   @impl Application
@@ -24,10 +24,18 @@ defmodule Tablecopy do
              types: Postgrex.DefaultTypes,
              name: DestDB
            )}
-        ]}, :permanent, 5000, :worker, [DBConnection.ConnectionPool]}
+        ]}, :permanent, 5000, :worker, [DBConnection.ConnectionPool]},
+      {Plug.Cowboy,
+       scheme: :http, plug: Tablecopy.Webserver.Router, options: [port: server_port()]}
     ]
 
     opts = [strategy: :one_for_one, name: Tablecopy.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  defp server_port() do
+    config = Application.get_env(:tablecopy, Webserver)
+    {:ok, port} = Keyword.fetch(config, :port)
+    port
   end
 end

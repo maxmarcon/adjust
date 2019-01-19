@@ -14,7 +14,7 @@ defmodule Tablecopy.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: {Tablecopy, []},
+      mod: {Tablecopy.Application, []},
       extra_applications: [:logger]
     ]
   end
@@ -23,7 +23,7 @@ defmodule Tablecopy.MixProject do
   defp deps do
     [
       {:postgrex, "~> 0.14"},
-      {:temp, "~> 0.4"}
+      {:plug_cowboy, "~> 2.0"}
     ]
   end
 end

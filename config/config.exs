@@ -45,7 +45,9 @@ config :tablecopy, :dest_db,
 
 config :tablecopy, Tablecopy,
   entries: 1_000_000,
-  buffer: 1000
+  buffer: 500
+
+config :tablecopy, Webserver, port: 8080
 
 #  db_dest: "dest_db",
 #  source_table: "source",
