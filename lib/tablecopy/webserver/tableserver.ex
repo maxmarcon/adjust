@@ -43,18 +43,22 @@ defmodule Tablecopy.Webserver.Tableserver do
 
           reading_stream = Postgrex.stream(db_conn, reading_query, [], max_rows: buffer)
 
-          Enum.reduce_while(reading_stream, send_chunked(conn, :ok), fn %Postgrex.Result{
-                                                                          rows: rows
-                                                                        },
-                                                                        conn ->
-            case chunk(conn, Enum.join(rows)) do
-              {:ok, conn} ->
-                {:cont, conn}
+          Enum.reduce_while(
+            reading_stream,
+            put_resp_header(conn, "content-type", "text/csv") |> send_chunked(:ok),
+            fn %Postgrex.Result{
+                 rows: rows
+               },
+               conn ->
+              case chunk(conn, Enum.join(rows)) do
+                {:ok, conn} ->
+                  {:cont, conn}
 
-              {:error, :closed} ->
-                {:halt, conn}
+                {:error, :closed} ->
+                  {:halt, conn}
+              end
             end
-          end)
+          )
         end
       )
 
