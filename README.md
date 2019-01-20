@@ -6,7 +6,7 @@ Runs a workflow that:
 
 1. Fills a table *source* with the integers from 1 to a given value (default: 1_000_000), alongside with their modulo 3 and modulo 5.
 1. Copies the content of *source* to a table *dest* located in a different database.
-1. The content of both tables is made available as CSV by an embedded Web server, and transfeered using chunked encoding. The content is **not** delivered in any particular order.
+1. The content of both tables is made available as CSV by an embedded Web server, and transferred using chunked encoding. The content is **not** delivered in any particular order.
 
 ## Installation
 
@@ -18,12 +18,12 @@ mix compile
 ```
 ## Configuration
 
-Configuration is in `config/config.exs`. See the comment in the file for which parameters can be configured and their meanings.
+Configuration is in `config/config.exs`. See the comments in the file for which parameters can be configured and their meanings.
 
 At the very least, you will need to add the `username`s and `password`s required to log in to the respective databases. Write access to both databases is required.
 If you don't want to create the tables manually, the program can do it for you. See the next section for details.
 
-By default, the application will create 1_000_000 rows in a table `source` in database `foo` and then copy them to
+By default, the application will create 1_000_000 rows in a table `source` in the database `foo` and then copy them to
 the table `dest` in the database `bar`. At most 500 entries will be kept in memory at any time.
 
 The content of the tables will be available at the following endpoints:
