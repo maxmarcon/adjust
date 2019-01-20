@@ -26,6 +26,15 @@ However, you don't need to create the tables, the program can do it by itself. S
 By default, the application will create 1_000_000 rows in a table `source` in database `foo` and then copy them to
 the table `dest` in the database `bar`. At most 500 entries will be kept in memory at any time.
 
+The content of the tables will be available at the following endpoints:
+
+```
+http://localhost:[port]/dbs/[source_db]/tables/[source_table]
+http://localhost:[port]/dbs/[dest_db]/tables/[dest_table]
+```
+
+The default port number is `8080`.
+
 ## How to run
 
 Once everything is configured, if you haven't created the source and destination tables already, you can create them by running:

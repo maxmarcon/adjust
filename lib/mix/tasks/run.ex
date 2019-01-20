@@ -5,8 +5,8 @@ defmodule Mix.Tasks.Tablecopy.Run do
   embedded Web server at the following endpints:
 
   ```
-  /dbs/[source_db]/[source_table]
-  /dbs/[dest_db]/[dest_table]
+  /dbs/[source_db]/tables/[source_table]
+  /dbs/[dest_db]/tables/[dest_table]
   ```
 
   where `source_db`, `source_table`, `dest_db` and `dest_table` are the names of the
