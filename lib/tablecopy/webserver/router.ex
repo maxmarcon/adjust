@@ -4,7 +4,7 @@ defmodule Tablecopy.Webserver.Router do
   plug(:match)
   plug(:dispatch)
 
-  get("/dbs/:db/:table", to: Tablecopy.Webserver.Tableserver)
+  get("/dbs/:db/tables/:table", to: Tablecopy.Webserver.Tableserver)
 
   match(_, do: send_resp(conn, 404, "Not found"))
 end

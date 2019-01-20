@@ -57,11 +57,15 @@ defmodule Mix.Tasks.Tablecopy.Run do
 
     unless Keyword.get(options, :halt, false) do
       IO.puts("The tables are now available under:")
-      IO.puts("localhost:#{config[:port]}/dbs/#{config[:source_db]}/#{config[:source_table]}")
-      IO.puts("localhost:#{config[:port]}/dbs/#{config[:dest_db]}/#{config[:dest_table]}")
+      IO.puts(get_http_endpoint(config[:port], config[:source_db], config[:source_table]))
+      IO.puts(get_http_endpoint(config[:port], config[:dest_db], config[:dest_table]))
 
       Process.sleep(:infinity)
     end
+  end
+
+  defp get_http_endpoint(port, db, table) do
+    "http://localhost:#{port}/dbs/#{db}/tables/#{table}"
   end
 
   defp get_config() do
