@@ -92,7 +92,7 @@ defmodule Mix.Tasks.Tablecopy.Run do
   defp fill_source_table(%{entries: entries, buffer: buffer, source_table: source_table}) do
     IO.puts("Filling table #{source_table} with #{entries} entries")
 
-    Enum.map(1..entries, &{&1, rem(&1, 3), rem(&1, 5)})
+    Stream.map(1..entries, &{&1, rem(&1, 3), rem(&1, 5)})
     |> Stream.chunk_every(buffer)
     |> Enum.each(fn tuples ->
       values =
