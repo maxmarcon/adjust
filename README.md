@@ -5,7 +5,7 @@
 Runs a workflow that:
 
 1. Fills a table *source* with the integers from 1 to a given value (default: 1_000_000), alongside with their modulo 3 and modulo 5.
-1. Copy the content of *source* to a table *dest* located in a different database. 
+1. Copies the content of *source* to a table *dest* located in a different database. 
 1. The content of both tables is made available as CSV by an embedded Web server, and transfeered using chunked encoding.
 
 ## Installation
