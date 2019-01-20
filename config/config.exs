@@ -9,9 +9,9 @@ config :tablecopy, :source_db,
   username: "homestead",
   # source DB password
   password: "secret",
-  # source database name
+  # source DB name
   database: "foo",
-  # source table name
+  # source table
   table: "source"
 
 config :tablecopy, :dest_db,
@@ -23,11 +23,11 @@ config :tablecopy, :dest_db,
   password: "secret",
   # desitnation DB name
   database: "bar",
-  # destination database table
+  # destination table
   table: "dest"
 
 config :tablecopy, Tablecopy,
-  # how many entries to generate in the source table
+  # how many rows to generate in the source table
   entries: 1_000_000,
   # how many rows will be kept in memory when generating the entries, copying or serving them (i.e. the size of a chunk)
   buffer: 500

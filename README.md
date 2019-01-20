@@ -20,8 +20,8 @@ mix compile
 
 Configuration is in `config/config.exs`. See the comment in the file for which parameters can be configured and their meanings.
 
-At the very least, you will need to add the `username` and `password` required to log in to the databases.
-However, you don't need to create the tables, the program can do it by itself. See the next section for details.
+At the very least, you will need to add the `username`s and `password`s required to log in to the respective databases. Write access to both databases is required.
+If you don't want to create the tables manually, the program can do it for you. See the next section for details.
 
 By default, the application will create 1_000_000 rows in a table `source` in database `foo` and then copy them to
 the table `dest` in the database `bar`. At most 500 entries will be kept in memory at any time.
